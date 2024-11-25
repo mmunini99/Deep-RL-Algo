@@ -143,7 +143,7 @@ class QR_DQN_Agent():
                 self.optimize_model()
 
                 # Soft update of the target network's weights
-                # θ′ ← τ θ + (1 −τ )θ′
+                # Polyak Average
                 target_net_state_dict = self.target_net.state_dict()
                 policy_net_state_dict = self.policy_net.state_dict()
                 for key in policy_net_state_dict:
