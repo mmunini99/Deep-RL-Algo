@@ -1,5 +1,13 @@
 import random
 from collections import deque
+import torch
+
+
+def quantile_loss(quantiles, targets):
+    error = targets - quantiles
+    huber_loss = torch.where(torch.abs(error) <= 1, 0.5 * error ** 2, torch.abs(error) - 0.5)
+    return huber_loss.mean()
+
 
 class ReplayMemory(object):
 
@@ -8,7 +16,6 @@ class ReplayMemory(object):
         self.store = Transition
 
     def push(self, *args):
-        """Save a transition"""
         self.memory.append(self.store(*args))
 
     def sample(self, batch_size):
@@ -17,6 +24,9 @@ class ReplayMemory(object):
     def __len__(self):
         return len(self.memory)
     
+
+
+
 
 
 
