@@ -162,3 +162,132 @@ class NAF_DQN(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.value(x)
         return x
+
+
+
+# TD3
+class POLICY__TD3(nn.Module):
+
+    def __init__(self, dim_action, max_value, min_value, device):
+        super(POLICY__TD3, self).__init__()
+        self.device = device
+        self.max_value = max_value.to(self.device)
+        self.min_value = min_value.to(self.device)
+        # Convolutional layers
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=(3, 3), stride=4, padding=2)  # Output: (32, 4, 4)
+        self.conv2 = nn.Conv2d(32, 32, kernel_size=(3, 3), stride=2, padding=2)  # Output: (64, 4, 4)
+        self.conv3 = nn.Conv2d(32, 64, kernel_size=(3, 3), stride=1, padding=1)  # Output: (128, 4, 4)
+
+        # Batch Normalization
+        self.bn1 = nn.BatchNorm2d(32)
+        self.bn2 = nn.BatchNorm2d(32)
+        self.bn3 = nn.BatchNorm2d(64)
+
+        # Fully connected layers
+        self.fc1 = nn.Linear(12544, 2048)  # Flattened size after convolution layers
+        self.fc2 = nn.Linear(2048, 512)
+        self.fc3 = nn.Linear(512, dim_action)
+
+
+    def forward(self, x, sd_value, noise_clamp=None):
+
+        x = x.clone()
+        # Convolutional block with ReLU and Batch Normalization
+        x = F.relu(self.bn1(self.conv1(x)))
+        x = F.relu(self.bn2(self.conv2(x)))
+        x = F.relu(self.bn3(self.conv3(x)))
+
+        # Flattening the output for the fully connected layers
+        x = x.view(x.size(0), -1)
+
+        # Fully connected layers with ReLU
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = F.tanh(self.fc3(x))
+
+        # Output layer
+        mean_value = x*self.max_value
+        noise = torch.normal(0, sd_value, mean_value.size())
+        if noise_clamp is not None:
+            noise = torch.clamp(noise, -noise_clamp, noise_clamp)
+        noise = noise.to(self.device)
+        mean_value = mean_value + noise
+        return torch.max(torch.min(mean_value, self.max_value), self.min_value)
+
+
+    def mean_action_single(self, x):
+
+        x = x.clone()
+        # Convolutional block with ReLU and Batch Normalization
+        x = F.relu(self.bn1(self.conv1(x)))
+        x = F.relu(self.bn2(self.conv2(x)))
+        x = F.relu(self.bn3(self.conv3(x)))
+
+        # Flattening the output for the fully connected layers
+        x = x.view(x.size(0), -1)
+
+        # Fully connected layers with ReLU
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = F.tanh(self.fc3(x))
+
+        # Output layer
+        return x*self.max_value
+
+
+
+
+
+
+class Q__TD3(nn.Module):
+
+    def __init__(self, action_dim, device):
+        super(Q__TD3, self).__init__()
+        self.device = device
+        self.action_dim = action_dim
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=(3, 3), stride=4, padding=2)  # Output: (32, 4, 4)
+        self.conv2 = nn.Conv2d(32, 32, kernel_size=(3, 3), stride=2, padding=2)  # Output: (64, 4, 4)
+        self.conv3 = nn.Conv2d(32, 64, kernel_size=(3, 3), stride=1, padding=1)  # Output: (128, 4, 4)
+
+        # Batch Normalization
+        self.bn1 = nn.BatchNorm2d(32)
+        self.bn2 = nn.BatchNorm2d(32)
+        self.bn3 = nn.BatchNorm2d(64)
+
+        # Fully connected layers
+        self.fc1 = nn.Linear(12544+self.action_dim, 2048)  # Flattened size after convolution layers
+        self.fc2 = nn.Linear(2048, 512)
+        self.fc3 = nn.Linear(512, 1)
+
+    def forward(self, x, action_array):
+
+        # Convolutional block with ReLU and Batch Normalization
+        x = F.relu(self.bn1(self.conv1(x)))
+        x = F.relu(self.bn2(self.conv2(x)))
+        x = F.relu(self.bn3(self.conv3(x)))
+
+
+
+
+        # Flattening the output for the fully connected layers
+        x = x.view(x.size(0), -1)
+
+        act = torch.tensor(action_array)
+
+        act = act.to(self.device)
+
+
+        # Include the action
+        x = torch.cat([x, act], dim=-1)
+
+
+
+
+        # Fully connected layers with ReLU
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+
+        # Output layer
+        x = self.fc3(x)
+
+        return x
