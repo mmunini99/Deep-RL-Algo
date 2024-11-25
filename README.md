@@ -5,6 +5,7 @@ DISCRETE ACTION
 * IQN : In this implementations the n_sub_agents refers the number of parallel training in the optimization steps to do. The IQN netowrk in NNetworks.py uses an Embedding NN. Note: at the moment this class has to be improve in terms of efficiency.
 CONTINUOUS ACTION
 * NAF : In this implementation the neural network is based on CNN layer.
+* TD3 : In this implementation the neural networks for both Policy and Q-value are based on CNN layer. Also, the Policy and Q-value are computed using two separated neural networks.
 
 
 
