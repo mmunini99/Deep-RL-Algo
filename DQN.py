@@ -12,9 +12,9 @@ import matplotlib.pyplot as plt
 from IPython import display
 import numpy as np
 
-from Utilities import ReplayMemory
-from Environment import CreateEnvironment
-from NNetworks import DQN
+from function_tools.Utilities import ReplayMemory
+from function_tools.Environment import CreateEnvironment
+from function_tools.NNetworks import DQN
 
 
 

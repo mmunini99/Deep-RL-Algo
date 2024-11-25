@@ -12,9 +12,9 @@ import matplotlib.pyplot as plt
 from IPython import display
 import numpy as np
 
-from Utilities import ReplayMemory, quantile_loss
-from Environment import CreateEnvironment
-from NNetworks import QR_DQN
+from function_tools.Utilities import ReplayMemory, quantile_loss
+from function_tools.Environment import CreateEnvironment
+from function_tools.NNetworks import QR_DQN
 
 
 
