@@ -3,6 +3,11 @@ from collections import deque
 import torch
 
 
+def preprocessing_input_state(state, device):
+    state = torch.tensor(state, dtype = torch.float32, device=device)
+    state = state.permute(2,0,1).unsqueeze(0)
+    return(state)
+
 def overall_loss(array_quantiles, array_targets):
     loss = torch.stack([quantile_loss(array_quantiles[:, i], array_targets[:, j]) for i in range(array_quantiles.size(1)) for j in range(array_targets.size(1))])
     return loss.sum()/array_targets.size(1)
