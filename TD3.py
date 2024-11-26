@@ -157,7 +157,7 @@ class TD3_Agent():
             state = preprocessing_input_state(state, self.device) # this allows the correct shape for the CNN
             for t in count():
                 action = self.select_action(state)
-                observation, reward, terminated, truncated, _ = self.env.step(action.cpu().detach().numpy().squeeze(0)) # transform the ootput of the NN to a format that is accepted by the environment
+                observation, reward, terminated, truncated, _ = self.env.step(action.cpu().detach().numpy().squeeze(0)) # transform the output of the NN to a format that is accepted by the environment
                 track_rew += (reward-track_rew)/(t+1)
                 reward = torch.tensor([reward], device=self.device)
                 done = terminated or truncated
