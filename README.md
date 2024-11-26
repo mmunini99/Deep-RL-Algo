@@ -6,6 +6,7 @@ DISCRETE ACTION
 CONTINUOUS ACTION
 * NAF : In this implementation the neural network is based on CNN layer.
 * TD3 : In this implementation the neural networks for both Policy and Q-value are based on CNN layer. Also, the Policy and Q-value are computed using two separated neural networks.
+* PPO : In this implementation the neural network is based on CNN layer. However, to make it more efficient it need to be parallelized the step where the dataset of multiple episode is created.
 
 
 
