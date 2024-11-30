@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from IPython import display
 import numpy as np
 
-from function_tools.Utilities import ReplayMemory, preprocessing_input_state
+from function_tools.Utilities import ReplayMemory, preprocessing_input_state, plot_episode
 from function_tools.Environment import CreateEnvironmentContinuous
 from function_tools.NNetworks import POLICY__SAC, Q__SAC
 
@@ -20,7 +20,7 @@ from function_tools.NNetworks import POLICY__SAC, Q__SAC
 
 class SAC_Agent():
 
-    def __init__(self, ENV_NAME, BATCH_SIZE, GAMMA, ENTROPY_PARAM, K_EPOCHS, STEPS_UPDATE, TAU, LR, REPETITION, N_EPISODES):
+    def __init__(self, ENV_NAME, BATCH_SIZE, GAMMA, ENTROPY_PARAM, K_EPOCHS, STEPS_UPDATE, TAU, LR, REPETITION, N_EPISODES, PRINT_PLOT):
         # hyperparameters
         self.env_name = ENV_NAME
         self.batch_size = BATCH_SIZE
@@ -32,6 +32,7 @@ class SAC_Agent():
         self.lr = LR
         self.repetition = REPETITION
         self.num_episodes = N_EPISODES
+        self.print_plot = PRINT_PLOT
         # setting possible accelerator
         self.device = torch.device(
                                     "cuda" if torch.cuda.is_available() else
@@ -209,35 +210,13 @@ class SAC_Agent():
                 if done:
                     self.epsiode_durations.append(i_episode)
                     self.epsiode_rewards.append(track_rew)
-                    self.plot_episode()
+                    if self.print_plot:
+                        plot_episode(self.epsiode_durations, self.epsiode_rewards)
                     break
 
 
 
-    def plot_episode(self):
 
-        is_ipython = 'inline' in matplotlib.get_backend()         
-
-        plt.ion()
-
-        plt.figure(1)
-
-        plt.clf()
-        plt.title('Training...')  
-
-        plt.xlabel('Episode')
-        plt.ylabel('Mean rewards') 
-
-        array_epis = np.array(self.epsiode_durations)  
-        array_rew = np.array(self.epsiode_rewards)  
-
-        plt.plot(array_epis, array_rew)
-
-        plt.pause(0.001) 
-
-        if is_ipython:
-            display.display(plt.gcf())
-            display.clear_output(wait=True)
 
 
 

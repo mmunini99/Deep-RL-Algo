@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from IPython import display
 import numpy as np
 
-from function_tools.Utilities import ReplayMemory, preprocessing_input_state, loss_value_PPO, loss_policy_PPO
+from function_tools.Utilities import ReplayMemory, preprocessing_input_state, loss_value_PPO, loss_policy_PPO, plot_episode
 from function_tools.Environment import CreateEnvironmentContinuous
 from function_tools.NNetworks import POLICY__PPO, VALUE__PPO
 
@@ -20,7 +20,7 @@ from function_tools.NNetworks import POLICY__PPO, VALUE__PPO
 
 class PPO_Agent():
 
-    def __init__(self, ENV_NAME, BATCH_SIZE, NUM_BATCH_MAX, GAMMA, TRUNC_PARAM, LAMBDA, MAX_LEN_TRAJ, N_ACTORS, K_EPOCHS, CLIP_VALUE, COEF_H, LR, REPETITION, NUM_ITERATIONS):
+    def __init__(self, ENV_NAME, BATCH_SIZE, NUM_BATCH_MAX, GAMMA, TRUNC_PARAM, LAMBDA, MAX_LEN_TRAJ, N_ACTORS, K_EPOCHS, CLIP_VALUE, COEF_H, LR, REPETITION, NUM_ITERATIONS, PRINT_PLOT):
         # hyperparameters
         self.env_name = ENV_NAME
         self.batch_size = BATCH_SIZE
@@ -36,6 +36,7 @@ class PPO_Agent():
         self.lr = LR
         self.repetition = REPETITION
         self.num_iterations = NUM_ITERATIONS
+        self.print_plot = PRINT_PLOT
         # setting possible accelerator
         self.device = torch.device(
                                     "cuda" if torch.cuda.is_available() else
@@ -164,7 +165,8 @@ class PPO_Agent():
                 self.track_episode += 1
                 self.epsiode_durations.append(self.track_episode)
                 self.epsiode_rewards.append(track_rew)
-                self.plot_episode()
+                if self.print_plot:
+                    plot_episode(self.epsiode_durations, self.epsiode_rewards)
                 track_count_step = 0
                 track_rew = 0
                 state, _ = self.env.reset()
@@ -308,30 +310,6 @@ class PPO_Agent():
 
 
 
-    def plot_episode(self):
-
-        is_ipython = 'inline' in matplotlib.get_backend()         
-
-        plt.ion()
-
-        plt.figure(1)
-
-        plt.clf()
-        plt.title('Training...')  
-
-        plt.xlabel('Episode')
-        plt.ylabel('Mean rewards') 
-
-        array_epis = np.array(self.epsiode_durations)  
-        array_rew = np.array(self.epsiode_rewards)  
-
-        plt.plot(array_epis, array_rew)
-
-        plt.pause(0.001) 
-
-        if is_ipython:
-            display.display(plt.gcf())
-            display.clear_output(wait=True)
 
 
 

@@ -13,7 +13,7 @@ from IPython import display
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 
-from function_tools.Utilities import ReplayMemory, overall_loss
+from function_tools.Utilities import ReplayMemory, overall_loss, plot_episode
 from function_tools.Environment import CreateEnvironment
 from function_tools.NNetworks import IQN
 
@@ -21,7 +21,7 @@ from function_tools.NNetworks import IQN
 
 class IQN_Agent():
 
-    def __init__(self, ENV_NAME, BATCH_SIZE, GAMMA, EPS_START, EPS_DECAY, EPS_END, TAU, LR, SUB_AGENTS, N_EPISODES):
+    def __init__(self, ENV_NAME, BATCH_SIZE, GAMMA, EPS_START, EPS_DECAY, EPS_END, TAU, LR, SUB_AGENTS, N_EPISODES, PRINT_PLOT):
         # hyperparameters
         self.env_name = ENV_NAME
         self.batch_size = BATCH_SIZE
@@ -33,6 +33,7 @@ class IQN_Agent():
         self.lr = LR
         self.n_sub_agents = SUB_AGENTS
         self.num_episodes = N_EPISODES
+        self.print_plot = PRINT_PLOT
         # setting possible accelerator
         self.device = torch.device(
                                     "cuda" if torch.cuda.is_available() else
@@ -187,34 +188,12 @@ class IQN_Agent():
                 if done:
                     self.epsiode_durations.append(i_episode)
                     self.epsiode_rewards.append(track_rew)
-                    self.plot_episode()
+                    if self.print_plot:
+                        plot_episode(self.epsiode_durations, self.epsiode_rewards)
                     break
 
 
-    def plot_episode(self):
 
-        is_ipython = 'inline' in matplotlib.get_backend()         
-
-        plt.ion()
-
-        plt.figure(1)
-
-        plt.clf()
-        plt.title('Training...')  
-
-        plt.xlabel('Episode')
-        plt.ylabel('Mean rewards') 
-
-        array_epis = np.array(self.epsiode_durations)  
-        array_rew = np.array(self.epsiode_rewards)  
-
-        plt.plot(array_epis, array_rew)
-
-        plt.pause(0.001) 
-
-        if is_ipython:
-            display.display(plt.gcf())
-            display.clear_output(wait=True)
 
 
 

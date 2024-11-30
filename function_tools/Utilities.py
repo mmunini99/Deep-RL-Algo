@@ -1,6 +1,36 @@
 import random
 from collections import deque
 import torch
+import matplotlib
+import matplotlib.pyplot as plt
+from IPython import display
+import numpy as np
+
+
+def plot_episode(durations, rewards):
+
+    is_ipython = 'inline' in matplotlib.get_backend()         
+
+    plt.ion()
+
+    plt.figure(1)
+
+    plt.clf()
+    plt.title('Training...')  
+
+    plt.xlabel('Episode')
+    plt.ylabel('Mean rewards') 
+
+    array_epis = np.array(durations)  
+    array_rew = np.array(rewards)  
+
+    plt.plot(array_epis, array_rew)
+
+    plt.pause(0.001) 
+
+    if is_ipython:
+        display.display(plt.gcf())
+        display.clear_output(wait=True)
 
 
 def loss_value_PPO(value_new, value_old, rew_to_go, clip_value):
