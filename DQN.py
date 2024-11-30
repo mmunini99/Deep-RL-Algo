@@ -153,6 +153,20 @@ class DQN_Agent():
                     break
 
 
+    def return_metric(self, n_last_episode):
+        # here it is called the metric used for hyperparameter tuning
+        return np.mean(self.epsiode_rewards[-n_last_episode:])
+    
+    def return_weights(self):
+        # create a dictionary to save the policy net weights and biases (NN) and the optimizer settings
+        dict_state = {
+                        'DQN_dict': self.policy_net.state_dict(),
+                        'optimizer_dict': self.optimizer.state_dict(),
+                      }
+        
+        return dict_state
+
+
 
 
 

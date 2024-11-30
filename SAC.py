@@ -216,7 +216,23 @@ class SAC_Agent():
 
 
 
+    def return_metric(self, n_last_episode):
+        # here it is called the metric used for hyperparameter tuning
+        return np.mean(self.epsiode_rewards[-n_last_episode:])
+    
 
+    def return_weights(self):
+        # create a dictionary to save the policy and Q(s,a) nets weights and biases (NN) and the optimizers settings
+        dict_state = {
+                        'policy_dict': self.policy_net.state_dict(),
+                        'q1_dict': self.Q1_net.state_dict(),
+                        'q2_dict': self.Q2_net.state_dict(),
+                        'optimizer_policy_dict': self.optimizer_policy.state_dict(),
+                        'optimizer_q1_dict': self.optimizer_Q1.state_dict(),
+                        'optimizer_q2_dict': self.optimizer_Q2.state_dict(),
+                      }
+        
+        return dict_state
 
 
 

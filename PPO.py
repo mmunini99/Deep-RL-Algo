@@ -307,7 +307,21 @@ class PPO_Agent():
             self.steps_done += 1
 
 
+    def return_metric(self, n_last_episode):
+        # here it is called the metric used for hyperparameter tuning
+        return np.mean(self.epsiode_rewards[-n_last_episode:])
+    
 
+    def return_weights(self):
+        # create a dictionary to save the policy and V(s) nets weights and biases (NN) and the optimizers settings
+        dict_state = {
+                        'policy_dict': self.policy_net.state_dict(),
+                        'value_dict': self.value_net.state_dict(),
+                        'optimizer_policy_dict': self.optimizer_policy.state_dict(),
+                        'optimizer_value_dict': self.optimizer_value.state_dict()
+                      }
+        
+        return dict_state
 
 
 
