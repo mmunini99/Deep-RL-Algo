@@ -100,7 +100,7 @@ class QR_DQN_Agent():
         with torch.no_grad():
             # select Q(s',a) for quanile version with highest mean 
             target_output_quantiles = self.target_net(non_final_next_states).view(-1, self.n_actions, self.n_quantiles) 
-            next_state_values[non_final_mask] = torch.gather(target_output_quantiles, 1, target_output_quantiles.mean(dim = 2).max(dim = 1).indices.unsqueeze(1).unsqueeze(1).expand(-1, -1, 51)).squeeze(1) 
+            next_state_values[non_final_mask] = torch.gather(target_output_quantiles, 1, target_output_quantiles.mean(dim = 2).max(dim = 1).indices.unsqueeze(1).unsqueeze(1).expand(-1, -1, self.n_quantiles)).squeeze(1) 
         
         expected_state_action_values = (next_state_values * self.gamma) + reward_batch.view(-1,1) # Compute the expected Q values plus the reward. To speed up compuation steps
 
