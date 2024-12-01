@@ -94,7 +94,7 @@ class QR_DQN_Agent():
 
         state_action_values = self.policy_net(state_batch) # compute quantile version of Q(s,a) for actions took and stored in rollout store
         state_action_values = state_action_values.view(-1, self.n_actions, self.n_quantiles) # define a new shape for make it easy to extract the quantiles for each state and action pair
-        state_action_values = torch.gather(state_action_values, 1, action_batch.unsqueeze(1).expand(-1, -1, 51)).squeeze(1) # change the shape 
+        state_action_values = torch.gather(state_action_values, 1, action_batch.unsqueeze(1).expand(-1, -1, self.n_quantiles)).squeeze(1) # change the shape 
 
         next_state_values = torch.zeros(self.batch_size, self.n_quantiles, device=self.device) # define the array for storing Q(s', a) for each quantiles
         with torch.no_grad():
