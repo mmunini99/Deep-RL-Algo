@@ -172,7 +172,7 @@ class QR_DQN_Agent():
         # create a dictionary to save the policy net weights and biases (NN) and the optimizer settings
         dict_state = {
                         'policy_dict': self.policy_net.state_dict(),
-                        'optimizer_policy_dict': self.optimizer_policy.state_dict()
+                        'optimizer_policy_dict': self.optimizer.state_dict()
                       }
         
         return dict_state
