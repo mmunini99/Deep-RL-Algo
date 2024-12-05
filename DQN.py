@@ -160,8 +160,8 @@ class DQN_Agent():
     def return_weights(self):
         # create a dictionary to save the policy net weights and biases (NN) and the optimizer settings
         dict_state = {
-                        'DQN_dict': self.policy_net.state_dict(),
-                        'optimizer_dict': self.optimizer.state_dict(),
+                        'policy_dict': self.policy_net.state_dict(),
+                        'optimizer_policy_dict': self.optimizer.state_dict(),
                       }
         
         return dict_state
