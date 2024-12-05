@@ -235,7 +235,35 @@ class SAC_Agent():
         return dict_state
 
 
+    def running(self, loading_data):
+        # storing
+        test_rew = []
+        test_steps = []
+        # load params
+        self.policy_net.load_state_dict(loading_data)
+        # running a single episode
+        state, info = self.env.reset()
+        state = preprocessing_input_state(state, self.device) # this allows the correct shape for the CNN
+        for t in count():
+            action = self.select_action(state)
+            observation, reward, terminated, truncated, _ = self.env.step(action.cpu().detach().numpy().squeeze(0))
+            test_rew.append(reward)
+            test_steps.append(t)
+            reward = torch.tensor([reward], device=self.device)
+            done = terminated or truncated
 
+            if terminated or truncated:
+                next_state = None
+            else:
+                next_state = preprocessing_input_state(observation, self.device) # save directly the correct shape for the next state for CNN, as the previous correction of format won't be repeated
+
+            # Move to the next state
+            state = next_state
+
+            if done:
+                break
+
+        return test_steps, test_rew
             
 
 

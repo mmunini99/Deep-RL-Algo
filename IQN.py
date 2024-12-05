@@ -206,6 +206,36 @@ class IQN_Agent():
                       }
         
         return dict_state
+    
+    def running(self, loading_data):
+        # storing
+        test_rew = []
+        test_steps = []
+        # load params
+        self.policy_net.load_state_dict(loading_data)
+        # running a single episode
+        state, info = self.env.reset()
+        state = torch.tensor(state, dtype=torch.float32, device=self.device).unsqueeze(0) # this allows the correct shape for the MLP
+        for t in count():
+            action = self.select_action(state)
+            observation, reward, terminated, truncated, _ = self.env.step(action.item())
+            test_rew.append(reward)
+            test_steps.append(t)
+            reward = torch.tensor([reward], device=self.device)
+            done = terminated or truncated
+
+            if terminated or truncated:
+                next_state = None
+            else:
+                next_state = torch.tensor(observation, dtype=torch.float32, device=self.device).unsqueeze(0) # save directly the correct shape for the next state for MLP, as the previous correction of format won't be repeated
+
+            # Move to the next state
+            state = next_state
+
+            if done:
+                break
+
+        return test_steps, test_rew
 
 
 
